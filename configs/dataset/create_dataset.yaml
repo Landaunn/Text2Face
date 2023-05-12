@@ -1,0 +1,10 @@
+clip:
+  name: 'ruclip-vit-base-patch32-384'
+  device: 'cuda:0'
+
+stylegan2:
+  network_pkl: 'https://api.ngc.nvidia.com/v2/models/nvidia/research/stylegan2/versions/1/files/stylegan2-ffhq-1024x1024.pkl'
+  device: 'cpu'
+
+dataset_save_path: '/home/kozunov/datasets/text2face/dataset.npy'
+num_samples: 10000
