@@ -1,4 +1,4 @@
--extra-index-url https://download.pytorch.org/whl/cu116
+--extra-index-url https://download.pytorch.org/whl/cu116
 
 numpy==1.24.3
 torch==1.13.1
