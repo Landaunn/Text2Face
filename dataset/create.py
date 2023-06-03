@@ -1,3 +1,6 @@
+import os
+os.environ["OMP_NUM_THREADS"] = "8"
+
 from tqdm import tqdm
 
 import numpy as np
@@ -31,7 +34,7 @@ def create_dataset(config_path: str = 'configs/dataset/create_dataset.yaml'):
         image_for_clip = processor.image_transform(Image.fromarray(gen_image))
         clip_emb = clip.encode_image(image_for_clip.unsqueeze(0).to(clip_device))
         clip_emb = clip_emb.squeeze().detach().cpu().numpy().reshape(-1)
-        mapping = tensor.squeeze().detach().cpu().numpy()
+        mapping = tensor.squeeze().detach().cpu().numpy()[0, :]
 
         sample = {
             'clip_emb': clip_emb,
