@@ -1,0 +1,13 @@
+data:
+  bs: 512
+  path: /home/kozunov/datasets/text2face/all_dataset.npy
+  embed_noise_scale: 1.0
+  sg_pkl: https://api.ngc.nvidia.com/v2/models/nvidia/research/stylegan2/versions/1/files/stylegan2-ffhq-1024x1024.pkl
+  clip_variant: ViT-B/32
+  n_latents: 1
+  latent_dim: 512
+  latent_repeats:
+  - 18
+  val_im_samples: 64
+  val_text_samples: text/face-val.txt
+  val_samples_per_text: 4
