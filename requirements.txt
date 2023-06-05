@@ -9,4 +9,5 @@ Pillow==9.5.0
 albumentations==1.3.0
 omegaconf==2.3.0
 
+dalle2-pytorch==0.2.38
 ruclip==0.0.2
