@@ -10,9 +10,10 @@ from stylegan2 import load_sg
 
 
 class Clipper(torch.nn.Module):
-    def __init__(self, clip_variant):
+    def __init__(self, clip_variant, device):
         super().__init__()
-        clip_model, processor = ruclip.load(clip_variant, device="cpu")
+        clip_model, processor = ruclip.load(clip_variant, device=device)
+        self.device=device
         self.clip = clip_model
         self.processor = processor
 
@@ -20,11 +21,11 @@ class Clipper(torch.nn.Module):
         """Expects images in -1 to 1 range"""
         gen_image = (255*image.squeeze(0).clamp(-1, 1)/2 + 127.5).to(torch.uint8).permute(1,2,0).numpy()
         image_for_clip = self.processor.image_transform(Image.fromarray(gen_image))
-        return self.clip.encode_image(image_for_clip.unsqueeze(0))
+        return self.clip.encode_image(image_for_clip.unsqueeze(0).to(self.device))
 
     def embed_text(self, text_samples):
-        input_ids = self.processor(text=text_samples)[['input_ids']]
-        return self.clip.encode_text(input_ids)
+        input_ids = self.processor(text=text_samples)['input_ids']
+        return self.clip.encode_text(input_ids.to(self.device))
 
     def _get_device(self):
         for p in self.clip.parameters():
@@ -68,8 +69,8 @@ def load_models(cfg, device, stats=None):
     diffusion_prior.cfg = cfg
 
     # Load eval models
-    G = load_sg(cfg.data.sg_pkl).to(device)
-    clip_model = Clipper(cfg.data.clip_variant).to(device)
+    G = load_sg(cfg.data.sg_pkl, device='cpu')
+    clip_model = Clipper(cfg.data.clip_variant, device)
 
     trainer = DiffusionPriorTrainer(
         diffusion_prior=diffusion_prior,

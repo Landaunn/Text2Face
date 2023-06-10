@@ -56,8 +56,8 @@ class LatentPrior(DiffusionPrior):
         # Z-score stats
         self.register_buffer("latent_mean", latent_stats[0])
         self.register_buffer("latent_std", latent_stats[1])
-        self.register_buffer("embed_mean", embed_stats)
-        #self.register_buffer("embed_std", embed_stats[1])
+        self.register_buffer("embed_mean", embed_stats[0])
+        self.register_buffer("embed_std", embed_stats[1])
         self.num_latents = num_latents
         assert self.num_latents == len(latent_repeats), \
             f"Number of latents ({num_latents}) and length of repeats ({len(latent_repeats)}) don't match"
