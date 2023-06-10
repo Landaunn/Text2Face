@@ -27,6 +27,7 @@ data:
   val_im_samples: 64
   val_text_samples: text/face-val.txt
   val_samples_per_text: 4
+device: cuda:0
 train:
   znorm_embed: false
   znorm_latent: true
