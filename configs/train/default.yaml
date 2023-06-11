@@ -16,7 +16,8 @@ model:
     predict_x_start: true
 data:
   bs: 512
-  path: /home/kozunov/datasets/text2face/all_dataset_2.npy
+  num_workers: 8
+  path: /home/kozunov/datasets/text2face/all_dataset_3.npy
   embed_noise_scale: 1.0
   sg_pkl: https://api.ngc.nvidia.com/v2/models/nvidia/research/stylegan2/versions/1/files/stylegan2-ffhq-1024x1024.pkl
   clip_variant: ruclip-vit-base-patch32-384
@@ -27,7 +28,12 @@ data:
   val_im_samples: 64
   val_text_samples: text/face-val.txt
   val_samples_per_text: 4
-device: cuda:0
+device: cuda:1
+logging: wandb
+wandb_project: ruclip2latent
+wandb_entity: null
+name: experiment_1
+resume: null
 train:
   znorm_embed: false
   znorm_latent: true
