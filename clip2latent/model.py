@@ -17,11 +17,15 @@ class Clipper(torch.nn.Module):
         self.clip = clip_model
         self.processor = processor
 
-    def embed_image(self, image):
+    def embed_image(self, images):
         """Expects images in -1 to 1 range"""
-        gen_image = (255*image.squeeze(0).clamp(-1, 1)/2 + 127.5).to(torch.uint8).permute(1,2,0).numpy()
-        image_for_clip = self.processor.image_transform(Image.fromarray(gen_image))
-        return self.clip.encode_image(image_for_clip.unsqueeze(0).to(self.device))
+        encode_images = []
+        for image in images:
+            gen_image = (255*image.clamp(-1, 1)/2 + 127.5).to(torch.uint8).permute(1,2,0).numpy()
+            image_for_clip = self.processor.image_transform(Image.fromarray(gen_image))
+            encode_image = self.clip.encode_image(image_for_clip.unsqueeze(0).to(self.device))
+            encode_images.append(encode_image)
+        return torch.cat(encode_images, dim=0)
 
     def embed_text(self, text_samples):
         input_ids = self.processor(text=text_samples)['input_ids']
