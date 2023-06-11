@@ -6,6 +6,6 @@ def load_data(cfg):
     ds = Clip2LatentDataset(cfg)
     stats = ds.stats
 
-    loader = DataLoader(ds, batch_size=cfg.bs, shuffle=True)
+    loader = DataLoader(ds, batch_size=cfg.bs, shuffle=True, num_workers=cfg.num_workers)
     
     return stats, loader
