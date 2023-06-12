@@ -1,5 +1,6 @@
 import torch
 from PIL import Image
+from omegaconf import OmegaConf
 
 from dalle2_pytorch import DiffusionPriorNetwork
 from dalle2_pytorch.train import DiffusionPriorTrainer
@@ -34,6 +35,47 @@ class Clipper(torch.nn.Module):
     def _get_device(self):
         for p in self.clip.parameters():
             return p.device
+
+
+class Clip2StyleGAN(torch.nn.Module):
+    """A wrapper around the compontent models to create an end-to-end text2image model"""
+    def __init__(self, cfg) -> None:
+        super().__init__()
+        
+        cfg = OmegaConf.load(cfg)
+        device = cfg.device      
+        G, clip_model, trainer = load_models(cfg, device)
+        
+        checkpoint = cfg.checkpoint
+        if checkpoint is not None:
+            state_dict = torch.load(checkpoint, map_location=device)
+            trainer.load_state_dict(state_dict["state_dict"], strict=False)
+        diffusion_prior = trainer.ema_diffusion_prior.ema_model
+        
+        self.G = G
+        self.clip_model = clip_model
+        self.diffusion_prior = diffusion_prior
+
+    def forward(
+        self,
+        text_samples,
+        n_samples_per_txt=1,
+        cond_scale=1.0, 
+        truncation=1.0, 
+        skips=1,
+        show_progress=True
+    ):
+        #self.diffusion_prior.set_timestep_skip(skips)
+        text_features = self.clip_model.embed_text(text_samples)
+        if n_samples_per_txt > 1:
+            text_features = text_features.repeat_interleave(n_samples_per_txt, dim=0)
+        pred_w = self.diffusion_prior.sample(text_features, cond_scale=cond_scale, show_progress=show_progress, truncation=truncation)
+        images = self.G.synthesis(pred_w.to('cpu'))
+
+        pred_w_clip_features = self.clip_model.embed_image(images)
+        similarity = torch.cosine_similarity(pred_w_clip_features, text_features)
+
+        return images, similarity
 
 
 def load_models(cfg, device, stats=None):
