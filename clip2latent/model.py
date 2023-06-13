@@ -39,14 +39,13 @@ class Clipper(torch.nn.Module):
 
 class Clip2StyleGAN(torch.nn.Module):
     """A wrapper around the compontent models to create an end-to-end text2image model"""
-    def __init__(self, cfg) -> None:
+    def __init__(self, cfg: str, checkpoint: str) -> None:
         super().__init__()
         
         cfg = OmegaConf.load(cfg)
-        device = cfg.device      
+        device = cfg.device
         G, clip_model, trainer = load_models(cfg, device)
         
-        checkpoint = cfg.checkpoint
         if checkpoint is not None:
             state_dict = torch.load(checkpoint, map_location=device)
             trainer.load_state_dict(state_dict["state_dict"], strict=False)

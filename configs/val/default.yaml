@@ -20,7 +20,6 @@ data:
   latent_repeats:
   - 18
 device: cuda:0
-checkpoint: /home/kozunov/projects/Text2Face/checkpoints/20230610-234109/000250.ckpt
 train:
   znorm_embed: false
   znorm_latent: true
